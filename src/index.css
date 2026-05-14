@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+}
+
+/* Custom horizontal scroll bar styling for date slider */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Subtle gold/copper glow for active selections */
+.copper-glow {
+  box-shadow: 0 0 25px -5px rgba(217, 136, 82, 0.25);
+}
+
+.copper-glow-sm {
+  box-shadow: 0 0 15px -3px rgba(217, 136, 82, 0.18);
+}
