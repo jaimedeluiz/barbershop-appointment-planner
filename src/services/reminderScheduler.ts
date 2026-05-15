@@ -1,5 +1,6 @@
 import { storage } from './storage';
 import { formatDateDisplay, formatTime12h } from '../utils/timeSlots';
+import { send24hReminderEmail } from './emailService';
 
 /**
  * Checks if a date & time is within the next 24 hours from right now
@@ -41,7 +42,12 @@ export const runAutomatic24hReminderCheck = (): Array<{ id: string; customerName
 
       const reminderText = `Reminder: ${booking.customerName}, your appointment for ${booking.serviceNames.join(', ')} is in 24h (${formatDateDisplay(booking.date)} at ${formatTime12h(booking.startTime)}) with ${booking.barberName}.`;
 
-      // 1. Native HTML5 Notification if permitted
+      // 1. Dispatch real email to customer inbox (via EmailJS)
+      send24hReminderEmail(booking, settings).catch((err) => {
+        console.warn('Auto reminder email status:', err);
+      });
+
+      // 2. Native HTML5 Notification if permitted
       if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
         try {
           new Notification(`${settings.shopName} (24h Automated Reminder)`, {
@@ -110,3 +116,4 @@ export const initAutomaticReminderScheduler = () => {
     window.removeEventListener('cb_storage_update', handleStorageUpdate);
   };
 };
+

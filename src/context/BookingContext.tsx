@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useMemo } from 'react';
 import { Service, Booking, TimeSlot } from '../types';
 import { storage } from '../services/storage';
 import { minutesToTime, timeToMinutes } from '../utils/timeSlots';
+import { sendBookingConfirmationEmail } from '../services/emailService';
 
 export interface CustomerInfo {
   name: string;
@@ -234,6 +235,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       };
 
       storage.addBooking(newBooking);
+      sendBookingConfirmationEmail(newBooking, storage.getSettings()).catch(() => {});
       setConfirmedBooking(newBooking);
       return newBooking;
     } finally {

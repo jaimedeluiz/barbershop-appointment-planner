@@ -19,6 +19,7 @@ import { Service, Barber, Booking, ShopSettings, ServiceCategory } from '../../t
 import { storage } from '../../services/storage';
 import { formatDateDisplay } from '../../utils/timeSlots';
 import { isWithin24Hours } from '../../utils/reminders';
+import { getEmailConfig, saveEmailConfig, EmailConfig } from '../../services/emailService';
 
 interface AdminDashboardProps {
   isOpen: boolean;
@@ -60,6 +61,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     endTime: '14:00',
     reason: 'Lunch Break / Meeting',
   });
+
+  // Real Email Integration Settings (EmailJS)
+  const [emailConfig, setEmailConfig] = useState<EmailConfig>(getEmailConfig());
+  const [emailSavedFeedback, setEmailSavedFeedback] = useState(false);
 
   const refreshAll = () => {
     setServices(storage.getServices());
@@ -817,6 +822,79 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     Slot Granularity Step:
                   </span>
                   <span className="font-bold text-copper-600">{settings.slotIntervalMinutes} minutes</span>
+                </div>
+              </div>
+
+              {/* Automatic Live Email Dispatch (EmailJS Integration) */}
+              <div className="p-4 rounded-xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 text-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-sm text-charcoal-900 dark:text-white flex items-center">
+                      <Mail className="w-3.5 h-3.5 mr-1.5 stroke-[1.5]" />
+                      Automatic 24h Email Delivery (EmailJS)
+                    </h4>
+                    <p className="text-[11px] text-charcoal-400 mt-0.5">
+                      Sends real emails directly to customers&apos; inboxes 24 hours before their cut. Free at <a href="https://www.emailjs.com" target="_blank" rel="noreferrer" className="underline text-copper-600">emailjs.com</a>.
+                    </p>
+                  </div>
+                  <label className="flex items-center space-x-1.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={emailConfig.enabled}
+                      onChange={(e) => setEmailConfig({ ...emailConfig, enabled: e.target.checked })}
+                      className="rounded text-copper-600 focus:ring-copper-500"
+                    />
+                    <span className="font-medium text-charcoal-800 dark:text-charcoal-200">Enabled</span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-[11px] text-charcoal-500 mb-1">Service ID:</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. service_xxxx"
+                      value={emailConfig.serviceId}
+                      onChange={(e) => setEmailConfig({ ...emailConfig, serviceId: e.target.value.trim() })}
+                      className="w-full px-2.5 py-1.5 rounded-lg border dark:bg-charcoal-950 dark:border-charcoal-800 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-charcoal-500 mb-1">Template ID:</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. template_xxxx"
+                      value={emailConfig.templateId}
+                      onChange={(e) => setEmailConfig({ ...emailConfig, templateId: e.target.value.trim() })}
+                      className="w-full px-2.5 py-1.5 rounded-lg border dark:bg-charcoal-950 dark:border-charcoal-800 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-charcoal-500 mb-1">Public Key:</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. user_xxxx / pub_xxxx"
+                      value={emailConfig.publicKey}
+                      onChange={(e) => setEmailConfig({ ...emailConfig, publicKey: e.target.value.trim() })}
+                      className="w-full px-2.5 py-1.5 rounded-lg border dark:bg-charcoal-950 dark:border-charcoal-800 text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[11px] text-charcoal-400">
+                    {emailConfig.enabled && emailConfig.serviceId ? 'Ready to deliver real outgoing emails' : 'Email dispatch is optional. When disabled, browser notifications & calendar alarms are used.'}
+                  </span>
+                  <button
+                    onClick={() => {
+                      saveEmailConfig(emailConfig);
+                      setEmailSavedFeedback(true);
+                      setTimeout(() => setEmailSavedFeedback(false), 2500);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-950 text-xs font-medium transition-colors"
+                  >
+                    {emailSavedFeedback ? 'Saved!' : 'Save Email Keys'}
+                  </button>
                 </div>
               </div>
             </div>
