@@ -27,10 +27,10 @@ const BookingFlowContainer: React.FC<{
 
         {/* Minimal Understated Hero Section */}
         <section className="text-center pt-8 pb-3 px-4 max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-charcoal-900 dark:text-white">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-charcoal-900 dark:text-white">
             Fresh Barber
           </h2>
-          <p className="text-xs sm:text-sm text-charcoal-400 dark:text-charcoal-400 mt-1.5 max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-charcoal-400 dark:text-charcoal-400 mt-2 max-w-md mx-auto">
             Select a service, pick your preferred time, and confirm in under a minute.
           </p>
         </section>
