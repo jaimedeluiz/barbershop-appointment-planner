@@ -11,6 +11,7 @@ import {
   BarChart3,
   Settings,
   Ban,
+  Search,
 } from 'lucide-react';
 import { Service, Barber, Booking, ShopSettings, ServiceCategory } from '../../types';
 import { storage } from '../../services/storage';
@@ -22,6 +23,7 @@ interface AdminDashboardProps {
 }
 
 type TabType = 'calendar' | 'services' | 'barbers' | 'analytics' | 'settings';
+type ViewMode = 'all' | 'today' | 'weekly' | 'date';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>('calendar');
@@ -35,7 +37,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     new Date().toISOString().split('T')[0]
   );
   const [filterBarberId, setFilterBarberId] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'daily' | 'weekly'>('daily');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // New Service Modal
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -67,30 +71,65 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     return () => window.removeEventListener('cb_storage_update', refreshAll);
   }, []);
 
+  // Whenever modal opens, refresh immediately from storage
+  useEffect(() => {
+    if (isOpen) {
+      refreshAll();
+    }
+  }, [isOpen]);
+
   // Filtered bookings for current calendar view
   const currentViewBookings = useMemo(() => {
-    if (viewMode === 'daily') {
-      return bookings.filter((b) => {
-        const matchDate = b.date === selectedDate;
-        const matchBarber = filterBarberId === 'all' || b.barberId === filterBarberId;
-        return matchDate && matchBarber;
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    return bookings
+      .filter((b) => {
+        // Status filter
+        if (filterStatus !== 'all' && b.status !== filterStatus) {
+          return false;
+        }
+
+        // Barber filter
+        if (filterBarberId !== 'all' && b.barberId !== filterBarberId) {
+          return false;
+        }
+
+        // Search query filter (matches ID, customer name, or phone)
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase().trim();
+          const matchId = b.id.toLowerCase().includes(q);
+          const matchName = b.customerName.toLowerCase().includes(q);
+          const matchPhone = b.customerPhone.includes(q);
+          if (!matchId && !matchName && !matchPhone) return false;
+        }
+
+        // View mode date filtering
+        if (viewMode === 'all') {
+          return true; // Show all bookings!
+        } else if (viewMode === 'today') {
+          return b.date === todayStr;
+        } else if (viewMode === 'date') {
+          return b.date === selectedDate;
+        } else if (viewMode === 'weekly') {
+          const base = new Date(selectedDate);
+          const weekDates: string[] = [];
+          for (let i = 0; i < 7; i++) {
+            const d = new Date(base);
+            d.setDate(base.getDate() + i);
+            weekDates.push(d.toISOString().split('T')[0]);
+          }
+          return weekDates.includes(b.date);
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        // Sort by date then startTime
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+        return a.startTime.localeCompare(b.startTime);
       });
-    } else {
-      // Weekly: 7 days around selectedDate
-      const base = new Date(selectedDate);
-      const weekDates: string[] = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(base);
-        d.setDate(base.getDate() + i);
-        weekDates.push(d.toISOString().split('T')[0]);
-      }
-      return bookings.filter((b) => {
-        const matchDate = weekDates.includes(b.date);
-        const matchBarber = filterBarberId === 'all' || b.barberId === filterBarberId;
-        return matchDate && matchBarber;
-      });
-    }
-  }, [bookings, viewMode, selectedDate, filterBarberId]);
+  }, [bookings, viewMode, selectedDate, filterBarberId, filterStatus, searchQuery]);
 
   // Analytics Stats
   const stats = useMemo(() => {
@@ -175,7 +214,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
         {/* Tab Navigation */}
         <div className="flex items-center space-x-1 sm:space-x-2 px-4 sm:px-6 pt-3 border-b border-charcoal-200 dark:border-charcoal-800 overflow-x-auto no-scrollbar">
           {[
-            { id: 'calendar', label: 'Calendar & Bookings', icon: Calendar },
+            { id: 'calendar', label: `Appointments (${bookings.length})`, icon: Calendar },
             { id: 'services', label: 'Services & Bundles', icon: Scissors },
             { id: 'barbers', label: 'Artisans & Shifts', icon: Users },
             { id: 'analytics', label: 'Statistics & Revenue', icon: BarChart3 },
@@ -189,8 +228,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                 onClick={() => setActiveTab(tab.id as TabType)}
                 className={`flex items-center space-x-1.5 px-3 py-2.5 text-xs font-semibold border-b-2 whitespace-nowrap transition-colors min-h-touch ${
                   isActive
-                    ? 'border-copper-500 text-copper-600 dark:text-copper-400'
-                    : 'border-transparent text-charcoal-500 hover:text-charcoal-900 dark:hover:text-white'
+                    ? 'border-charcoal-900 dark:border-white text-charcoal-900 dark:text-white'
+                    : 'border-transparent text-charcoal-400 hover:text-charcoal-900 dark:hover:text-white'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -206,32 +245,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
           {activeTab === 'calendar' && (
             <div className="space-y-4">
               {/* Controls bar */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-charcoal-50 dark:bg-charcoal-950 p-3 rounded-2xl border border-charcoal-200/60 dark:border-charcoal-800">
-                <div className="flex items-center space-x-2 flex-wrap gap-y-2">
-                  <div className="flex items-center bg-white dark:bg-charcoal-900 rounded-xl border border-charcoal-200 dark:border-charcoal-800 px-2.5 py-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-copper-500 mr-2" />
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="text-xs bg-transparent text-charcoal-900 dark:text-white outline-none"
-                    />
-                  </div>
-
-                  <div className="flex rounded-xl bg-charcoal-200 dark:bg-charcoal-800 p-0.5 text-xs">
+              <div className="flex flex-col gap-3 bg-charcoal-50 dark:bg-charcoal-950 p-3.5 rounded-2xl border border-charcoal-200/60 dark:border-charcoal-800">
+                {/* Row 1: View mode tabs & Search */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                  <div className="flex rounded-xl bg-charcoal-200/70 dark:bg-charcoal-800 p-0.5 text-xs overflow-x-auto no-scrollbar">
                     <button
-                      onClick={() => setViewMode('daily')}
-                      className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                        viewMode === 'daily'
+                      onClick={() => setViewMode('all')}
+                      className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                        viewMode === 'all'
                           ? 'bg-white dark:bg-charcoal-900 text-charcoal-900 dark:text-white shadow-sm'
                           : 'text-charcoal-500'
                       }`}
                     >
-                      Day
+                      All ({bookings.length})
+                    </button>
+                    <button
+                      onClick={() => setViewMode('today')}
+                      className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                        viewMode === 'today'
+                          ? 'bg-white dark:bg-charcoal-900 text-charcoal-900 dark:text-white shadow-sm'
+                          : 'text-charcoal-500'
+                      }`}
+                    >
+                      Today
                     </button>
                     <button
                       onClick={() => setViewMode('weekly')}
-                      className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                      className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors ${
                         viewMode === 'weekly'
                           ? 'bg-white dark:bg-charcoal-900 text-charcoal-900 dark:text-white shadow-sm'
                           : 'text-charcoal-500'
@@ -239,97 +279,174 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     >
                       Week
                     </button>
+                    <button
+                      onClick={() => setViewMode('date')}
+                      className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                        viewMode === 'date'
+                          ? 'bg-white dark:bg-charcoal-900 text-charcoal-900 dark:text-white shadow-sm'
+                          : 'text-charcoal-500'
+                      }`}
+                    >
+                      Specific Date
+                    </button>
                   </div>
 
-                  <select
-                    value={filterBarberId}
-                    onChange={(e) => setFilterBarberId(e.target.value)}
-                    className="text-xs px-3 py-2 rounded-xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 text-charcoal-900 dark:text-white outline-none"
-                  >
-                    <option value="all">All Barbers</option>
-                    {barbers.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
+                  {/* Search box */}
+                  <div className="relative flex-1 sm:max-w-xs">
+                    <input
+                      type="text"
+                      placeholder="Search customer, phone, or ID..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 text-charcoal-900 dark:text-white outline-none"
+                    />
+                    <Search className="w-3.5 h-3.5 text-charcoal-400 absolute left-2.5 top-1/2 -translate-y-1/2 stroke-[1.5]" />
+                  </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setShowBlockModal(true)}
-                    className="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-2 rounded-xl text-xs font-semibold bg-charcoal-200 dark:bg-charcoal-800 hover:bg-charcoal-300 text-charcoal-800 dark:text-charcoal-200 transition-colors"
-                  >
-                    <Ban className="w-3.5 h-3.5 text-red-500" />
-                    <span>Block Out Time</span>
-                  </button>
+                {/* Row 2: Filters & Actions */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1 border-t border-charcoal-200/50 dark:border-charcoal-850">
+                  <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+                    {viewMode === 'date' && (
+                      <div className="flex items-center bg-white dark:bg-charcoal-900 rounded-xl border border-charcoal-200 dark:border-charcoal-800 px-2.5 py-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-charcoal-500 mr-2" />
+                        <input
+                          type="date"
+                          value={selectedDate}
+                          onChange={(e) => setSelectedDate(e.target.value)}
+                          className="text-xs bg-transparent text-charcoal-900 dark:text-white outline-none"
+                        />
+                      </div>
+                    )}
 
-                  <button
-                    onClick={() => setShowManualBookingModal(true)}
-                    className="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-2 rounded-xl text-xs font-semibold bg-copper-600 hover:bg-copper-500 text-white transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Walk-In Appointment</span>
-                  </button>
+                    <select
+                      value={filterBarberId}
+                      onChange={(e) => setFilterBarberId(e.target.value)}
+                      className="text-xs px-2.5 py-1.5 rounded-xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 text-charcoal-900 dark:text-white outline-none"
+                    >
+                      <option value="all">All Barbers</option>
+                      {barbers.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="text-xs px-2.5 py-1.5 rounded-xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 text-charcoal-900 dark:text-white outline-none"
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setShowBlockModal(true)}
+                      className="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-medium bg-charcoal-200/80 dark:bg-charcoal-800 hover:bg-charcoal-300 text-charcoal-800 dark:text-charcoal-200 transition-colors"
+                    >
+                      <Ban className="w-3.5 h-3.5 text-red-500" />
+                      <span>Block Time</span>
+                    </button>
+
+                    <button
+                      onClick={() => setShowManualBookingModal(true)}
+                      className="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-1.5 rounded-xl text-xs font-medium bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-950 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Walk-In</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Bookings List */}
               {currentViewBookings.length === 0 ? (
                 <div className="text-center py-12 rounded-2xl bg-charcoal-50 dark:bg-charcoal-950/40 border border-charcoal-200 dark:border-charcoal-800">
-                  <Calendar className="w-8 h-8 mx-auto text-charcoal-400 mb-2 opacity-50" />
+                  <Calendar className="w-8 h-8 mx-auto text-charcoal-400 mb-2 opacity-50 stroke-[1.5]" />
                   <p className="font-semibold text-charcoal-700 dark:text-charcoal-300 text-sm">
-                    No Appointments Scheduled
+                    No Appointments Found
                   </p>
                   <p className="text-xs text-charcoal-400 mt-1">
-                    No bookings found for the selected date and filter.
+                    {bookings.length > 0
+                      ? 'No appointments match the selected filter. Try switching to "All" view mode above.'
+                      : 'No appointments in the system yet.'}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {currentViewBookings.map((b) => {
                     const isCancelled = b.status === 'cancelled';
                     const isCompleted = b.status === 'completed';
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+                    const dateBadge =
+                      b.date === todayStr
+                        ? 'Today'
+                        : b.date === tomorrowStr
+                        ? 'Tomorrow'
+                        : formatDateDisplay(b.date);
 
                     return (
                       <div
                         key={b.id}
-                        className={`p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                        className={`p-3.5 rounded-xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 ${
                           isCancelled
-                            ? 'bg-charcoal-50/50 dark:bg-charcoal-950/40 border-charcoal-200/60 dark:border-charcoal-800 opacity-60'
+                            ? 'bg-charcoal-50/50 dark:bg-charcoal-950/40 border-charcoal-200/50 dark:border-charcoal-800 opacity-60'
                             : 'bg-white dark:bg-charcoal-900 border-charcoal-200 dark:border-charcoal-800 shadow-sm'
                         }`}
                       >
                         <div className="flex items-start space-x-3">
-                          <div className="w-10 h-10 rounded-xl bg-copper-50 dark:bg-copper-950/40 flex items-center justify-center text-copper-600 font-bold text-xs flex-shrink-0">
-                            {b.startTime}
+                          <div className="w-12 h-12 rounded-lg border border-charcoal-200 dark:border-charcoal-700 bg-charcoal-50 dark:bg-charcoal-950 flex flex-col items-center justify-center text-xs flex-shrink-0">
+                            <span className="font-semibold text-charcoal-900 dark:text-white leading-none">
+                              {b.startTime}
+                            </span>
+                            <span className="text-[10px] text-charcoal-400 mt-0.5">
+                              {b.totalDurationMinutes}m
+                            </span>
                           </div>
+
                           <div>
-                            <div className="flex items-center space-x-2">
-                              <span className="font-mono text-xs font-bold text-copper-600 dark:text-copper-400">
+                            <div className="flex items-center space-x-2 flex-wrap">
+                              <span className="font-mono text-xs font-semibold text-charcoal-900 dark:text-white">
                                 {b.id}
                               </span>
-                              <span className="text-xs font-bold text-charcoal-900 dark:text-white">
+                              <span className="text-xs font-semibold text-charcoal-900 dark:text-white">
                                 {b.customerName}
                               </span>
-                              <span className="text-xs text-charcoal-400">({b.customerPhone})</span>
+                              <span className="text-[11px] text-charcoal-400">
+                                {b.customerPhone}
+                              </span>
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-700 dark:text-charcoal-300">
+                                {dateBadge}
+                              </span>
                             </div>
+
                             <p className="text-xs font-medium text-charcoal-700 dark:text-charcoal-300 mt-0.5">
                               {b.serviceNames.join(' • ')}
                             </p>
-                            <div className="flex items-center space-x-3 text-[11px] text-charcoal-400 mt-1">
+
+                            <div className="flex items-center space-x-2.5 text-[11px] text-charcoal-400 mt-1">
                               <span>Barber: {b.barberName}</span>
                               <span>•</span>
                               <span>
-                                {formatDateDisplay(b.date)} ({b.totalDurationMinutes} min)
+                                {formatDateDisplay(b.date)} ({b.startTime} – {b.endTime})
                               </span>
                               <span>•</span>
-                              <span className="font-semibold text-charcoal-800 dark:text-charcoal-200">
+                              <span className="font-semibold text-charcoal-900 dark:text-white">
                                 ${b.totalPrice}
                               </span>
                             </div>
+
                             {b.notes && (
-                              <p className="text-[11px] text-amber-600 dark:text-amber-400 italic mt-1">
+                              <p className="text-[11px] text-amber-600 dark:text-amber-400 italic mt-0.5">
                                 &ldquo;{b.notes}&rdquo;
                               </p>
                             )}
@@ -339,12 +456,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                         {/* Actions */}
                         <div className="flex items-center space-x-2 self-end md:self-center">
                           <span
-                            className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
+                            className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded ${
                               isCancelled
-                                ? 'bg-red-100 text-red-600'
+                                ? 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
                                 : isCompleted
-                                ? 'bg-blue-100 text-blue-600'
-                                : 'bg-emerald-100 text-emerald-600'
+                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
+                                : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400'
                             }`}
                           >
                             {b.status}
@@ -358,7 +475,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                     storage.updateBooking({ ...b, status: 'completed' });
                                     refreshAll();
                                   }}
-                                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                                  className="px-2 py-1 rounded-md text-xs font-medium bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-700 dark:text-charcoal-200 hover:bg-charcoal-200 transition-colors"
                                   title="Mark as completed"
                                 >
                                   Complete
@@ -371,13 +488,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                     refreshAll();
                                   }
                                 }}
-                                className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                                className="px-2 py-1 rounded-md text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                                 title="Cancel appointment"
                               >
                                 Cancel
                               </button>
                             </>
                           )}
+
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Permanently remove booking ${b.id}?`)) {
+                                storage.deleteBooking(b.id);
+                                refreshAll();
+                              }
+                            }}
+                            className="p-1 text-charcoal-400 hover:text-red-600 transition-colors"
+                            title="Delete booking"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
+                          </button>
                         </div>
                       </div>
                     );

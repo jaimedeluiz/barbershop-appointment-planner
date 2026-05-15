@@ -139,6 +139,12 @@ export const storage = {
     return false;
   },
 
+  deleteBooking(id: string): void {
+    const bookings = this.getBookings().filter((b) => b.id !== id);
+    localStorage.setItem(KEYS.BOOKINGS, JSON.stringify(bookings));
+    notifyStorageChange('bookings');
+  },
+
   // SETTINGS
   getSettings(): ShopSettings {
     try {
