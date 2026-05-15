@@ -28,7 +28,7 @@ const BookingFlowContainer: React.FC<{
         {/* Minimal Understated Hero Section */}
         <section className="text-center pt-8 pb-3 px-4 max-w-2xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-charcoal-900 dark:text-white">
-            Crown &amp; Blade
+            Fresh Barber
           </h2>
           <p className="text-xs sm:text-sm text-charcoal-400 dark:text-charcoal-400 mt-1.5 max-w-md mx-auto">
             Select a service, pick your preferred time, and confirm in under a minute.
@@ -70,7 +70,7 @@ const BookingFlowContainer: React.FC<{
           </div>
 
           <div>
-            <span>Crown &amp; Blade Co.</span>
+            <span>Fresh Barber Co.</span>
           </div>
         </div>
       </footer>

@@ -26,11 +26,11 @@ export const downloadIcsFile = (booking: Booking, settings: ShopSettings): void 
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Crown and Blade//Barbershop Booking App//EN',
+    'PRODID:-//Fresh Barber//Barbershop Booking App//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:${booking.id}-${Date.now()}@crownandblade.com`,
+    `UID:${booking.id}-${Date.now()}@freshbarber.com`,
     `DTSTAMP:${nowIso}`,
     `DTSTART:${startIso}`,
     `DTEND:${endIso}`,
@@ -41,7 +41,7 @@ export const downloadIcsFile = (booking: Booking, settings: ShopSettings): void 
     'BEGIN:VALARM',
     'TRIGGER:-PT24H',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Crown & Blade Appointment Tomorrow',
+    'DESCRIPTION:Fresh Barber Appointment Tomorrow',
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR',
@@ -50,7 +50,7 @@ export const downloadIcsFile = (booking: Booking, settings: ShopSettings): void 
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
   const link = document.createElement('a');
   link.href = window.URL.createObjectURL(blob);
-  link.setAttribute('download', `crown-and-blade-${booking.id}.ics`);
+  link.setAttribute('download', `fresh-barber-${booking.id}.ics`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

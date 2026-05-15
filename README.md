@@ -1,4 +1,4 @@
-# ✂️ Crown & Blade | Artisanal Barbershop Web Application
+# ✂️ Fresh Barber | Modern Barbershop Web Application
 
 > A modern, mobile-first appointment booking platform built with **React 18**, **TypeScript**, and **Tailwind CSS**. Designed with an artisanal luxury aesthetic (deep charcoal & warm copper), real-time schedule conflict prevention, and a full password-protected administrative suite.
 

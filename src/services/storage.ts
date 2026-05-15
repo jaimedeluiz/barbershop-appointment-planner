@@ -154,7 +154,13 @@ export const storage = {
         localStorage.setItem(KEYS.SETTINGS, JSON.stringify(INITIAL_SHOP_SETTINGS));
         return INITIAL_SHOP_SETTINGS;
       }
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (parsed.shopName && parsed.shopName.includes('Crown')) {
+        parsed.shopName = 'Fresh Barber';
+        parsed.email = 'hello@freshbarber.com';
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(parsed));
+      }
+      return parsed;
     } catch {
       return INITIAL_SHOP_SETTINGS;
     }

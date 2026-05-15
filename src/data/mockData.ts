@@ -145,10 +145,10 @@ export const INITIAL_BARBERS: Barber[] = [
 ];
 
 export const INITIAL_SHOP_SETTINGS: ShopSettings = {
-  shopName: 'Crown & Blade Co.',
-  tagline: 'Artisanal Grooming & Classic Shaving Parlour',
+  shopName: 'Fresh Barber',
+  tagline: 'Modern Grooming & Classic Shaving',
   phone: '+1 (555) 234-8921',
-  email: 'concierge@crownandblade.com',
+  email: 'hello@freshbarber.com',
   address: '142 Mercer Street, Soho, New York, NY 10012',
   bufferMinutes: 5,
   slotIntervalMinutes: 15,

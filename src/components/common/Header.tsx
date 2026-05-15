@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLookup, onOpenAdmin }) => 
           </div>
 
           <span className="font-semibold text-sm tracking-tight text-charcoal-900 dark:text-white">
-            Crown &amp; Blade
+            Fresh Barber
           </span>
         </div>
 
