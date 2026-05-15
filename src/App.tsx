@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/common/Header';
 import { StepIndicator } from './components/common/StepIndicator';
 import { Step1Services } from './components/booking/Step1Services';
@@ -11,7 +11,8 @@ import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { BookingProvider, useBooking } from './context/BookingContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { MapPin, Phone } from 'lucide-react';
+import { MapPin, Phone, Bell, X } from 'lucide-react';
+import { initAutomaticReminderScheduler } from './services/reminderScheduler';
 
 const BookingFlowContainer: React.FC<{
   onOpenLookup: () => void;
@@ -81,10 +82,49 @@ export default function App() {
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [reminderToast, setReminderToast] = useState<string | null>(null);
+
+  // Initialize the automatic 24h background scheduler on startup
+  useEffect(() => {
+    const stopScheduler = initAutomaticReminderScheduler();
+
+    const handleReminderFired = (e: any) => {
+      if (e.detail?.reminderText) {
+        setReminderToast(e.detail.reminderText);
+        setTimeout(() => {
+          setReminderToast(null);
+        }, 7000);
+      }
+    };
+
+    window.addEventListener('cb_auto_reminder_fired', handleReminderFired);
+
+    return () => {
+      stopScheduler();
+      window.removeEventListener('cb_auto_reminder_fired', handleReminderFired);
+    };
+  }, []);
 
   return (
     <ThemeProvider>
       <BookingProvider>
+        {/* Automatic 24h Reminder Toast Alert */}
+        {reminderToast && (
+          <div className="fixed top-16 right-4 z-50 max-w-sm p-3.5 bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-950 rounded-xl shadow-lg border border-charcoal-700 dark:border-charcoal-200 text-xs flex items-start space-x-2.5 animate-fade-in">
+            <Bell className="w-4 h-4 stroke-[2] text-amber-400 dark:text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold">Automatic 24h Reminder</p>
+              <p className="text-[11px] opacity-90 mt-0.5">{reminderToast}</p>
+            </div>
+            <button
+              onClick={() => setReminderToast(null)}
+              className="p-1 opacity-70 hover:opacity-100"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         <BookingFlowContainer
           onOpenLookup={() => setIsLookupOpen(true)}
           onOpenAdmin={() => setIsAdminLoginOpen(true)}

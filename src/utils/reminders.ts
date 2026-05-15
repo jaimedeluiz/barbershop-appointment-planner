@@ -92,3 +92,4 @@ export const triggerBrowserNotification = (booking: Booking, settings: ShopSetti
     return false;
   }
 };
+

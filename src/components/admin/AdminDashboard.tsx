@@ -18,7 +18,7 @@ import {
 import { Service, Barber, Booking, ShopSettings, ServiceCategory } from '../../types';
 import { storage } from '../../services/storage';
 import { formatDateDisplay } from '../../utils/timeSlots';
-import { isWithin24Hours, generateEmailReminder, triggerBrowserNotification } from '../../utils/reminders';
+import { isWithin24Hours } from '../../utils/reminders';
 
 interface AdminDashboardProps {
   isOpen: boolean;
@@ -430,12 +430,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                 {b.customerPhone}
                               </span>
 
-                              {/* Clickable Customer Email Link */}
+                              {/* Clickable Customer Email Link to write whatever */}
                               {b.customerEmail ? (
                                 <a
-                                  href={generateEmailReminder(b, settings).mailtoUrl}
-                                  className="inline-flex items-center space-x-1 text-[11px] text-copper-600 dark:text-copper-400 hover:underline px-1.5 py-0.5 rounded bg-copper-50 dark:bg-copper-950/40 transition-colors"
-                                  title={`Click to compose email to ${b.customerEmail}`}
+                                  href={`mailto:${b.customerEmail}`}
+                                  className="inline-flex items-center space-x-1 text-[11px] text-charcoal-700 dark:text-charcoal-200 hover:text-copper-600 dark:hover:text-copper-400 hover:underline px-1.5 py-0.5 rounded bg-charcoal-100 dark:bg-charcoal-800 transition-colors"
+                                  title={`Click to email ${b.customerEmail}`}
                                 >
                                   <Mail className="w-3 h-3 stroke-[1.5]" />
                                   <span>{b.customerEmail}</span>
@@ -448,11 +448,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                 {dateBadge}
                               </span>
 
-                              {isUpcoming24h && !isCancelled && (
-                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 animate-pulse">
-                                  Within 24h
+                              {/* Automated 24h Reminder Status */}
+                              {b.autoReminderDispatched ? (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center">
+                                  <Bell className="w-2.5 h-2.5 mr-1 stroke-[1.5]" />
+                                  24h reminder auto-sent
                                 </span>
-                              )}
+                              ) : isUpcoming24h && !isCancelled ? (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 flex items-center animate-pulse">
+                                  <Bell className="w-2.5 h-2.5 mr-1 stroke-[1.5]" />
+                                  24h reminder scheduled
+                                </span>
+                              ) : null}
                             </div>
 
                             <p className="text-xs font-medium text-charcoal-700 dark:text-charcoal-300 mt-0.5">
@@ -481,35 +488,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
                         {/* Actions */}
                         <div className="flex items-center space-x-2 self-end md:self-center flex-wrap gap-y-1">
-                          {/* 24h Reminder Action Button */}
-                          {!isCancelled && (
-                            <button
-                              onClick={() => {
-                                const reminder = generateEmailReminder(b, settings);
-                                storage.updateBooking({
-                                  ...b,
-                                  reminderSent: true,
-                                  reminderSentAt: new Date().toISOString(),
-                                });
-                                triggerBrowserNotification(b, settings);
-                                refreshAll();
-                                // Direct to default email client with prefilled reminder template
-                                window.location.href = reminder.mailtoUrl;
-                              }}
-                              className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                                b.reminderSent
-                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400'
-                                  : isUpcoming24h
-                                  ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 font-semibold'
-                                  : 'bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-700 dark:text-charcoal-200 hover:bg-charcoal-200'
-                              }`}
-                              title="Send 24h reminder email to customer"
-                            >
-                              <Bell className="w-3 h-3 stroke-[1.5]" />
-                              <span>{b.reminderSent ? 'Reminder Sent' : '24h Reminder'}</span>
-                            </button>
-                          )}
-
                           <span
                             className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded ${
                               isCancelled

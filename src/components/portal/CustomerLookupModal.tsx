@@ -8,13 +8,11 @@ import {
   RotateCcw,
   Download,
   Mail,
-  Bell,
 } from 'lucide-react';
 import { Booking, TimeSlot } from '../../types';
 import { storage } from '../../services/storage';
 import { formatDateDisplay, formatTime12h, generateAvailableSlots } from '../../utils/timeSlots';
 import { downloadIcsFile } from '../../utils/calendar';
-import { generateEmailReminder } from '../../utils/reminders';
 
 interface CustomerLookupModalProps {
   isOpen: boolean;
@@ -278,9 +276,9 @@ export const CustomerLookupModal: React.FC<CustomerLookupModalProps> = ({ isOpen
                     <div className="flex items-center space-x-1">
                       <Mail className="w-3 h-3 stroke-[1.5]" />
                       <a
-                        href={generateEmailReminder(booking, settings).mailtoUrl}
-                        className="text-copper-600 dark:text-copper-400 hover:underline"
-                        title="Click to email customer"
+                        href={`mailto:${booking.customerEmail}`}
+                        className="text-charcoal-700 dark:text-charcoal-300 hover:underline"
+                        title="Click to compose email"
                       >
                         {booking.customerEmail}
                       </a>
@@ -300,15 +298,10 @@ export const CustomerLookupModal: React.FC<CustomerLookupModalProps> = ({ isOpen
                         <span>.ics with 24h alert</span>
                       </button>
 
-                      {booking.customerEmail && (
-                        <a
-                          href={generateEmailReminder(booking, settings).mailtoUrl}
-                          className="inline-flex items-center space-x-1 text-charcoal-400 hover:text-copper-600 dark:hover:text-copper-400"
-                          title="Open 24h reminder email template"
-                        >
-                          <Bell className="w-3 h-3 stroke-[1.5]" />
-                          <span>Send 24h Reminder</span>
-                        </a>
+                      {booking.autoReminderDispatched && (
+                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                          24h reminder auto-sent
+                        </span>
                       )}
                     </div>
 
