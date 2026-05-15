@@ -7,11 +7,14 @@ import {
   AlertTriangle,
   RotateCcw,
   Download,
+  Mail,
+  Bell,
 } from 'lucide-react';
 import { Booking, TimeSlot } from '../../types';
 import { storage } from '../../services/storage';
 import { formatDateDisplay, formatTime12h, generateAvailableSlots } from '../../utils/timeSlots';
 import { downloadIcsFile } from '../../utils/calendar';
+import { generateEmailReminder } from '../../utils/reminders';
 
 interface CustomerLookupModalProps {
   isOpen: boolean;
@@ -271,17 +274,43 @@ export const CustomerLookupModal: React.FC<CustomerLookupModalProps> = ({ isOpen
                     <Calendar className="w-3 h-3 stroke-[1.5]" />
                     <span>{formatDateDisplay(booking.date)} at {formatTime12h(booking.startTime)} ({booking.totalDurationMinutes} min)</span>
                   </div>
+                  {booking.customerEmail && (
+                    <div className="flex items-center space-x-1">
+                      <Mail className="w-3 h-3 stroke-[1.5]" />
+                      <a
+                        href={generateEmailReminder(booking, settings).mailtoUrl}
+                        className="text-copper-600 dark:text-copper-400 hover:underline"
+                        title="Click to email customer"
+                      >
+                        {booking.customerEmail}
+                      </a>
+                    </div>
+                  )}
                 </div>
 
                 {!isCancelled && (
-                  <div className="mt-3 pt-2.5 border-t border-charcoal-100 dark:border-charcoal-850 flex items-center justify-between">
-                    <button
-                      onClick={() => downloadIcsFile(booking, settings)}
-                      className="inline-flex items-center space-x-1 text-charcoal-400 hover:text-charcoal-700 dark:hover:text-white"
-                    >
-                      <Download className="w-3 h-3 stroke-[1.5]" />
-                      <span>.ics file</span>
-                    </button>
+                  <div className="mt-3 pt-2.5 border-t border-charcoal-100 dark:border-charcoal-850 flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => downloadIcsFile(booking, settings)}
+                        className="inline-flex items-center space-x-1 text-charcoal-400 hover:text-charcoal-700 dark:hover:text-white"
+                        title="Calendar with 24h native alarm alert"
+                      >
+                        <Download className="w-3 h-3 stroke-[1.5]" />
+                        <span>.ics with 24h alert</span>
+                      </button>
+
+                      {booking.customerEmail && (
+                        <a
+                          href={generateEmailReminder(booking, settings).mailtoUrl}
+                          className="inline-flex items-center space-x-1 text-charcoal-400 hover:text-copper-600 dark:hover:text-copper-400"
+                          title="Open 24h reminder email template"
+                        >
+                          <Bell className="w-3 h-3 stroke-[1.5]" />
+                          <span>Send 24h Reminder</span>
+                        </a>
+                      )}
+                    </div>
 
                     <div className="flex items-center space-x-2">
                       <button

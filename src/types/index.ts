@@ -56,6 +56,8 @@ export interface Booking {
   customerEmail?: string;
   notes?: string;
   status: BookingStatus;
+  reminderSent?: boolean;
+  reminderSentAt?: string;
   createdAt: string;
   updatedAt?: string;
 }

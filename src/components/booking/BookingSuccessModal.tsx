@@ -128,8 +128,18 @@ export const BookingSuccessModal: React.FC<BookingSuccessModalProps> = ({ bookin
             className="flex items-center justify-center space-x-1.5 py-2.5 px-3 rounded-lg text-xs font-medium border border-charcoal-200 dark:border-charcoal-700 text-charcoal-800 dark:text-charcoal-200 hover:border-charcoal-400 transition-colors"
           >
             <Download className="w-3.5 h-3.5 stroke-[1.5]" />
-            <span>.ics File</span>
+            <span>.ics (24h Alert)</span>
           </button>
+        </div>
+
+        {/* 24h Reminder notice */}
+        <div className="mb-4 p-2.5 rounded-lg bg-charcoal-50 dark:bg-charcoal-950 border border-charcoal-200/60 dark:border-charcoal-800 text-[11px] text-charcoal-500 dark:text-charcoal-400 text-left flex items-center justify-between">
+          <span>24h Reminder scheduled via Calendar alarm</span>
+          {booking.customerEmail && (
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+              &amp; Email ({booking.customerEmail})
+            </span>
+          )}
         </div>
 
         {/* Done / Book Another */}

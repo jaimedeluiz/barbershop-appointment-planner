@@ -208,10 +208,10 @@ export const Step4Confirm: React.FC = () => {
               )}
             </div>
 
-            {/* Email (Optional) */}
+            {/* Email */}
             <div>
               <label htmlFor="customer-email" className="block text-xs text-charcoal-500 mb-1">
-                Email Address <span className="text-charcoal-400 font-normal">(Optional)</span>
+                Email Address <span className="text-charcoal-400 font-normal">(Recommended for 24h reminder)</span>
               </label>
               <input
                 id="customer-email"
@@ -226,10 +226,14 @@ export const Step4Confirm: React.FC = () => {
                     : 'border-charcoal-200 dark:border-charcoal-800 focus:border-charcoal-600 dark:focus:border-charcoal-500'
                 }`}
               />
-              {touched.email && errors.email && (
+              {touched.email && errors.email ? (
                 <p className="text-[11px] text-red-500 mt-1 flex items-center">
                   <AlertCircle className="w-3 h-3 mr-1 stroke-[1.5]" />
                   {errors.email}
+                </p>
+              ) : (
+                <p className="text-[10px] text-charcoal-400 mt-1">
+                  Used for digital booking confirmation and 24-hour reminder email.
                 </p>
               )}
             </div>
