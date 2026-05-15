@@ -55,3 +55,4 @@ export const downloadIcsFile = (booking: Booking, settings: ShopSettings): void 
   link.click();
   document.body.removeChild(link);
 };
+

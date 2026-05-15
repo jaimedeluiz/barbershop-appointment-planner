@@ -18,7 +18,8 @@ export interface Barber {
   id: string;
   name: string;
   role: string;
-  avatar: string;
+  initials: string;
+  avatar?: string;
   bio: string;
   rating: number;
   reviewCount: number;
@@ -96,3 +97,4 @@ export interface ShopSettings {
   blockedDates: string[]; // YYYY-MM-DD
   blockedTimes: BlockedTime[];
 }
+

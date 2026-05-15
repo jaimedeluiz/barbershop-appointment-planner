@@ -93,3 +93,4 @@ CREATE POLICY "Public read shop_settings" ON shop_settings FOR SELECT USING (tru
 CREATE POLICY "Public insert bookings" ON bookings FOR INSERT WITH CHECK (true);
 CREATE POLICY "Public read bookings" ON bookings FOR SELECT USING (true);
 CREATE POLICY "Public update bookings" ON bookings FOR UPDATE USING (true);
+

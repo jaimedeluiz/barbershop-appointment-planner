@@ -205,3 +205,4 @@ export const generateAvailableSlots = (
 
   return slots;
 };
+

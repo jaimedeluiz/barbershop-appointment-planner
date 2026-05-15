@@ -48,7 +48,7 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
       },
       minHeight: {
         'touch': '44px',
@@ -60,3 +60,4 @@ export default {
   },
   plugins: [],
 }
+

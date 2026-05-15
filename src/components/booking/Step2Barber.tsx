@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Star, Check, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, Star, Users } from 'lucide-react';
 import { Barber } from '../../types';
 import { storage } from '../../services/storage';
 import { useBooking } from '../../context/BookingContext';
@@ -20,24 +20,14 @@ export const Step2Barber: React.FC = () => {
 
   return (
     <div className="w-full pb-28">
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-charcoal-900 dark:text-white tracking-tight">
-          Select Your Barber
-        </h2>
-        <p className="text-sm text-charcoal-500 dark:text-charcoal-400 mt-1">
-          Pick your preferred artisan or select &quot;Any Available&quot; for the maximum time slot flexibility.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* OPTION 1: ANY AVAILABLE BARBER (Default) */}
+      <div className="space-y-3">
+        {/* OPTION 1: ANY AVAILABLE BARBER */}
         <div
           onClick={() => setSelectedBarberId('any')}
-          className={`p-5 rounded-2xl cursor-pointer transition-all duration-200 border text-left flex items-start justify-between ${
+          className={`p-4 rounded-xl cursor-pointer transition-all border text-left flex items-center justify-between ${
             selectedBarberId === 'any'
-              ? 'bg-copper-50/60 dark:bg-copper-950/20 border-copper-500 ring-1 ring-copper-500 shadow-md shadow-copper-500/10'
-              : 'bg-white dark:bg-charcoal-900 border-charcoal-200/80 dark:border-charcoal-800/80 hover:border-copper-300 dark:hover:border-charcoal-700 shadow-sm'
+              ? 'bg-charcoal-50 dark:bg-charcoal-900 border-charcoal-900 dark:border-white shadow-sm'
+              : 'bg-white dark:bg-charcoal-950 border-charcoal-200/70 dark:border-charcoal-800/80 hover:border-charcoal-400 dark:hover:border-charcoal-700'
           }`}
           role="radio"
           aria-checked={selectedBarberId === 'any'}
@@ -49,37 +39,38 @@ export const Step2Barber: React.FC = () => {
             }
           }}
         >
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-charcoal-800 to-charcoal-950 dark:from-charcoal-700 dark:to-charcoal-900 flex items-center justify-center text-copper-400 shadow-inner flex-shrink-0">
-              <Sparkles className="w-8 h-8" />
+          <div className="flex items-center space-x-3.5">
+            {/* Minimalist Line Drawing Avatar */}
+            <div className="w-11 h-11 rounded-lg border border-charcoal-200 dark:border-charcoal-700 flex items-center justify-center text-charcoal-700 dark:text-charcoal-300">
+              <Users className="w-5 h-5 stroke-[1.5]" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs uppercase tracking-wider font-semibold text-copper-600 dark:text-copper-400">
-                  Recommended
+                <h3 className="font-medium text-sm text-charcoal-900 dark:text-white">
+                  Any Available Barber
+                </h3>
+                <span className="text-[10px] text-charcoal-400 font-normal">
+                  (Fastest)
                 </span>
               </div>
-              <h3 className="font-semibold text-base text-charcoal-900 dark:text-white mt-0.5">
-                Any Available Barber
-              </h3>
-              <p className="text-xs text-charcoal-500 dark:text-charcoal-400 mt-1 leading-relaxed">
-                Great if you need a specific time. We&apos;ll automatically assign the first available master barber.
+              <p className="text-xs text-charcoal-400 mt-0.5">
+                Automatically assigns the first open chair
               </p>
             </div>
           </div>
 
           <div
-            className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ml-2 ${
+            className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors flex-shrink-0 ${
               selectedBarberId === 'any'
-                ? 'bg-copper-500 text-white'
+                ? 'bg-charcoal-900 text-white dark:bg-white dark:text-charcoal-950'
                 : 'border border-charcoal-300 dark:border-charcoal-700'
             }`}
           >
-            {selectedBarberId === 'any' && <Check className="w-4 h-4 stroke-[2.5]" />}
+            {selectedBarberId === 'any' && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
           </div>
         </div>
 
-        {/* SPECIFIC BARBERS */}
+        {/* SPECIFIC BARBERS (Clean Monograms Instead of Photos) */}
         {barbers.map((barber) => {
           const isSelected = selectedBarberId === barber.id;
 
@@ -87,10 +78,10 @@ export const Step2Barber: React.FC = () => {
             <div
               key={barber.id}
               onClick={() => setSelectedBarberId(barber.id)}
-              className={`p-5 rounded-2xl cursor-pointer transition-all duration-200 border text-left flex items-start justify-between ${
+              className={`p-4 rounded-xl cursor-pointer transition-all border text-left flex items-start justify-between ${
                 isSelected
-                  ? 'bg-copper-50/60 dark:bg-copper-950/20 border-copper-500 ring-1 ring-copper-500 shadow-md shadow-copper-500/10'
-                  : 'bg-white dark:bg-charcoal-900 border-charcoal-200/80 dark:border-charcoal-800/80 hover:border-copper-300 dark:hover:border-charcoal-700 shadow-sm'
+                  ? 'bg-charcoal-50 dark:bg-charcoal-900 border-charcoal-900 dark:border-white shadow-sm'
+                  : 'bg-white dark:bg-charcoal-950 border-charcoal-200/70 dark:border-charcoal-800/80 hover:border-charcoal-400 dark:hover:border-charcoal-700'
               }`}
               role="radio"
               aria-checked={isSelected}
@@ -102,40 +93,32 @@ export const Step2Barber: React.FC = () => {
                 }
               }}
             >
-              <div className="flex items-start space-x-4">
-                <img
-                  src={barber.avatar}
-                  alt={barber.name}
-                  className="w-16 h-16 rounded-2xl object-cover shadow-sm flex-shrink-0 border border-charcoal-200 dark:border-charcoal-700"
-                  loading="lazy"
-                />
+              <div className="flex items-start space-x-3.5">
+                {/* Minimalist Monogram Line Avatar */}
+                <div className="w-11 h-11 rounded-lg border border-charcoal-200 dark:border-charcoal-700 flex items-center justify-center text-xs font-semibold text-charcoal-800 dark:text-charcoal-200 tracking-wider">
+                  {barber.initials || barber.name.split(' ').map((n) => n[0]).join('')}
+                </div>
+
                 <div>
-                  <div className="flex items-center space-x-1.5 text-xs">
-                    <span className="font-semibold text-charcoal-800 dark:text-charcoal-200">
-                      {barber.role}
-                    </span>
-                    <span className="text-charcoal-400">•</span>
-                    <div className="flex items-center text-amber-500">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400 mr-0.5" />
-                      <span className="font-medium text-[11px]">{barber.rating}</span>
-                      <span className="text-[10px] text-charcoal-400 ml-0.5">({barber.reviewCount})</span>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-medium text-sm text-charcoal-900 dark:text-white">
+                      {barber.name}
+                    </h3>
+                    <div className="flex items-center text-charcoal-400 text-xs">
+                      <Star className="w-3 h-3 stroke-[1.5] text-amber-500 fill-amber-400 mr-1" />
+                      <span>{barber.rating}</span>
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-base text-charcoal-900 dark:text-white mt-0.5">
-                    {barber.name}
-                  </h3>
-
-                  <p className="text-xs text-charcoal-500 dark:text-charcoal-400 mt-1 line-clamp-2 leading-relaxed">
-                    {barber.bio}
+                  <p className="text-xs text-charcoal-400 mt-0.5">
+                    {barber.role}
                   </p>
 
-                  {/* Specialties */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {barber.specialties.map((spec) => (
                       <span
                         key={spec}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-600 dark:text-charcoal-300"
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-charcoal-200 dark:border-charcoal-800 text-charcoal-500 dark:text-charcoal-400"
                       >
                         {spec}
                       </span>
@@ -145,13 +128,13 @@ export const Step2Barber: React.FC = () => {
               </div>
 
               <div
-                className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 ml-2 ${
+                className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors flex-shrink-0 mt-0.5 ${
                   isSelected
-                    ? 'bg-copper-500 text-white'
+                    ? 'bg-charcoal-900 text-white dark:bg-white dark:text-charcoal-950'
                     : 'border border-charcoal-300 dark:border-charcoal-700'
                 }`}
               >
-                {isSelected && <Check className="w-4 h-4 stroke-[2.5]" />}
+                {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
               </div>
             </div>
           );
@@ -159,22 +142,22 @@ export const Step2Barber: React.FC = () => {
       </div>
 
       {/* Sticky Bottom Actions Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-white/95 dark:bg-charcoal-900/95 border-t border-charcoal-200 dark:border-charcoal-800 p-4 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-white/95 dark:bg-charcoal-950/95 border-t border-charcoal-100 dark:border-charcoal-800 p-3.5">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <button
             onClick={prevStep}
-            className="flex items-center space-x-1.5 px-4 py-3 rounded-xl font-medium text-sm text-charcoal-700 dark:text-charcoal-300 hover:bg-charcoal-100 dark:hover:bg-charcoal-800 transition-colors min-h-touch"
+            className="flex items-center space-x-1.5 px-4 py-3 rounded-xl text-xs font-medium text-charcoal-600 dark:text-charcoal-300 hover:text-charcoal-900 dark:hover:text-white transition-colors min-h-touch"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5 stroke-[2]" />
             <span>Back</span>
           </button>
 
           <button
             onClick={nextStep}
-            className="flex items-center space-x-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-copper-600 hover:bg-copper-500 text-white shadow-md shadow-copper-500/25 active:scale-[0.98] transition-all min-h-touch"
+            className="flex items-center space-x-2 px-6 py-3 rounded-xl font-medium text-xs bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-950 active:scale-[0.98] transition-all min-h-touch"
           >
-            <span>Choose Date & Time</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Continue</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
           </button>
         </div>
       </div>

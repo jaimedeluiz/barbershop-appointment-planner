@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Check, Sparkles, Tag, ArrowRight } from 'lucide-react';
+import { Clock, Check, ArrowRight } from 'lucide-react';
 import { Service, ServiceCategory } from '../../types';
 import { storage } from '../../services/storage';
 import { useBooking } from '../../context/BookingContext';
 
 const CATEGORIES: { id: ServiceCategory; label: string }[] = [
-  { id: 'all', label: 'All Services' },
-  { id: 'bundles', label: 'Bundles & Savings' },
+  { id: 'all', label: 'All' },
   { id: 'cuts', label: 'Haircuts' },
   { id: 'shaves', label: 'Beard & Shave' },
-  { id: 'color', label: 'Color & Tone' },
+  { id: 'bundles', label: 'Bundles' },
+  { id: 'color', label: 'Color' },
   { id: 'kids', label: 'Kids' },
 ];
 
@@ -35,39 +35,28 @@ export const Step1Services: React.FC = () => {
 
   return (
     <div className="w-full pb-28">
-      {/* Header text */}
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-charcoal-900 dark:text-white tracking-tight">
-          Select Your Services
-        </h2>
-        <p className="text-sm text-charcoal-500 dark:text-charcoal-400 mt-1">
-          Pick individual services or choose a bundle to save. Combine as many as you need.
-        </p>
-      </div>
-
-      {/* Category Pills (Horizontal Scroll on Mobile) */}
-      <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar pb-3 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+      {/* Category Tabs (Minimal horizontal line) */}
+      <div className="flex items-center space-x-1 overflow-x-auto no-scrollbar pb-1 mb-6 border-b border-charcoal-100 dark:border-charcoal-850">
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat.id;
           return (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all min-h-touch ${
+              className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 -mb-px transition-colors min-h-touch ${
                 isActive
-                  ? 'bg-copper-600 text-white shadow-sm'
-                  : 'bg-white dark:bg-charcoal-900 text-charcoal-600 dark:text-charcoal-300 border border-charcoal-200 dark:border-charcoal-800 hover:border-copper-400'
+                  ? 'border-charcoal-900 dark:border-white text-charcoal-900 dark:text-white font-semibold'
+                  : 'border-transparent text-charcoal-400 hover:text-charcoal-700 dark:hover:text-charcoal-200'
               }`}
             >
-              {cat.id === 'bundles' && <Sparkles className="w-3.5 h-3.5 inline mr-1 text-copper-200" />}
               {cat.label}
             </button>
           );
         })}
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Services List */}
+      <div className="space-y-2.5">
         {filteredServices.map((service) => {
           const isSelected = selectedServices.some((s) => s.id === service.id);
 
@@ -75,10 +64,10 @@ export const Step1Services: React.FC = () => {
             <div
               key={service.id}
               onClick={() => toggleService(service)}
-              className={`group relative p-5 rounded-2xl cursor-pointer transition-all duration-200 border text-left flex flex-col justify-between ${
+              className={`p-4 rounded-xl cursor-pointer transition-all border text-left flex items-start justify-between gap-4 ${
                 isSelected
-                  ? 'bg-copper-50/60 dark:bg-copper-950/20 border-copper-500 ring-1 ring-copper-500 shadow-md shadow-copper-500/10'
-                  : 'bg-white dark:bg-charcoal-900 border-charcoal-200/80 dark:border-charcoal-800/80 hover:border-copper-300 dark:hover:border-charcoal-700 shadow-sm'
+                  ? 'bg-charcoal-50 dark:bg-charcoal-900 border-charcoal-900 dark:border-white shadow-sm'
+                  : 'bg-white dark:bg-charcoal-950 border-charcoal-200/70 dark:border-charcoal-800/80 hover:border-charcoal-400 dark:hover:border-charcoal-700'
               }`}
               role="checkbox"
               aria-checked={isSelected}
@@ -90,62 +79,48 @@ export const Step1Services: React.FC = () => {
                 }
               }}
             >
-              <div>
-                {/* Badges row */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                    {service.isBundle && (
-                      <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-copper-100 dark:bg-copper-900/60 text-copper-700 dark:text-copper-300">
-                        <Tag className="w-3 h-3 mr-1" />
-                        Bundle Offer
-                      </span>
-                    )}
-                    {service.popular && !service.isBundle && (
-                      <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-700 dark:text-charcoal-300">
-                        Popular
-                      </span>
-                    )}
-                    {service.discountAmount ? (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
-                        Save ${service.discountAmount}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  {/* Selection Checkbox */}
-                  <div
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${
-                      isSelected
-                        ? 'bg-copper-500 text-white'
-                        : 'border border-charcoal-300 dark:border-charcoal-700 group-hover:border-copper-400'
-                    }`}
-                  >
-                    {isSelected && <Check className="w-4 h-4 stroke-[2.5]" />}
-                  </div>
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-medium text-sm text-charcoal-900 dark:text-white">
+                    {service.name}
+                  </h3>
+                  {service.isBundle && (
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-charcoal-100 dark:bg-charcoal-800 text-charcoal-600 dark:text-charcoal-300">
+                      Bundle
+                    </span>
+                  )}
+                  {service.discountAmount ? (
+                    <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                      Save ${service.discountAmount}
+                    </span>
+                  ) : null}
                 </div>
 
-                {/* Name */}
-                <h3 className="font-semibold text-base text-charcoal-900 dark:text-white group-hover:text-copper-600 dark:group-hover:text-copper-400 transition-colors">
-                  {service.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-charcoal-500 dark:text-charcoal-400 mt-1 leading-relaxed">
+                <p className="text-xs text-charcoal-400 dark:text-charcoal-400 mt-1 leading-relaxed">
                   {service.description}
                 </p>
-              </div>
 
-              {/* Price & Duration footer */}
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-charcoal-100 dark:border-charcoal-800/80">
-                <div className="flex items-center text-xs text-charcoal-500 dark:text-charcoal-400">
-                  <Clock className="w-3.5 h-3.5 mr-1 text-copper-500" />
-                  <span>{service.durationMinutes} min</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-lg font-bold text-charcoal-900 dark:text-white">
+                <div className="flex items-center space-x-3 text-xs text-charcoal-400 mt-2">
+                  <span className="flex items-center">
+                    <Clock className="w-3 h-3 stroke-[1.5] mr-1" />
+                    {service.durationMinutes} min
+                  </span>
+                  <span>•</span>
+                  <span className="font-semibold text-charcoal-900 dark:text-white">
                     ${service.price}
                   </span>
                 </div>
+              </div>
+
+              {/* Minimal Line Checkbox */}
+              <div
+                className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors flex-shrink-0 mt-0.5 ${
+                  isSelected
+                    ? 'bg-charcoal-900 text-white dark:bg-white dark:text-charcoal-950'
+                    : 'border border-charcoal-300 dark:border-charcoal-700'
+                }`}
+              >
+                {isSelected && <Check className="w-3.5 h-3.5 stroke-[2.5]" />}
               </div>
             </div>
           );
@@ -153,21 +128,21 @@ export const Step1Services: React.FC = () => {
       </div>
 
       {/* Sticky Bottom Summary Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-white/95 dark:bg-charcoal-900/95 border-t border-charcoal-200 dark:border-charcoal-800 p-4 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-md bg-white/95 dark:bg-charcoal-950/95 border-t border-charcoal-100 dark:border-charcoal-800 p-3.5">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs text-charcoal-500 dark:text-charcoal-400">
+            <p className="text-xs text-charcoal-400">
               {selectedServices.length === 0
                 ? 'No services selected'
                 : `${selectedServices.length} service${selectedServices.length > 1 ? 's' : ''} • ${totalDurationMinutes} min`}
             </p>
             <div className="flex items-baseline space-x-2">
-              <span className="text-xl font-bold text-charcoal-900 dark:text-white">
+              <span className="text-lg font-bold text-charcoal-900 dark:text-white">
                 ${totalPrice}
               </span>
               {totalDiscount > 0 && (
-                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  (Includes ${totalDiscount} discount)
+                <span className="text-xs text-emerald-600 dark:text-emerald-400">
+                  (${totalDiscount} saved)
                 </span>
               )}
             </div>
@@ -176,14 +151,14 @@ export const Step1Services: React.FC = () => {
           <button
             onClick={nextStep}
             disabled={!isStep1Valid}
-            className={`flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl font-semibold text-sm transition-all min-h-touch ${
+            className={`flex items-center justify-center space-x-2 px-6 py-3 rounded-xl font-medium text-xs transition-all min-h-touch ${
               isStep1Valid
-                ? 'bg-copper-600 hover:bg-copper-500 text-white shadow-md shadow-copper-500/25 active:scale-[0.98]'
-                : 'bg-charcoal-200 dark:bg-charcoal-800 text-charcoal-400 cursor-not-allowed'
+                ? 'bg-charcoal-900 dark:bg-white text-white dark:text-charcoal-950 active:scale-[0.98]'
+                : 'bg-charcoal-100 dark:bg-charcoal-850 text-charcoal-400 cursor-not-allowed'
             }`}
           >
-            <span>Choose Barber</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Continue</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
           </button>
         </div>
       </div>

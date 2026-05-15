@@ -20,32 +20,25 @@ const BookingFlowContainer: React.FC<{
   const { step, confirmedBooking, resetBooking } = useBooking();
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-charcoal-200 dark:selection:bg-charcoal-800">
       <div>
         <Header onOpenLookup={onOpenLookup} onOpenAdmin={onOpenAdmin} />
 
-        {/* Hero Section */}
-        <section className="text-center pt-8 pb-4 px-4 max-w-3xl mx-auto">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-copper-100/80 dark:bg-copper-950/50 border border-copper-200 dark:border-copper-900/60 text-copper-800 dark:text-copper-300 text-[11px] font-semibold uppercase tracking-wider mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-copper-500 animate-pulse" />
-            <span>Master Barber Studio • Soho, NYC</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-charcoal-900 dark:text-white">
-            Precision Grooming. <br className="hidden sm:inline" />
-            <span className="text-copper-600 dark:text-copper-400 font-normal italic">
-              Crafted For You.
-            </span>
+        {/* Minimal Understated Hero Section */}
+        <section className="text-center pt-8 pb-3 px-4 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-charcoal-900 dark:text-white">
+            Crown &amp; Blade
           </h2>
-          <p className="text-xs sm:text-sm text-charcoal-500 dark:text-charcoal-400 mt-2 max-w-lg mx-auto">
-            Traditional hot towel rituals, bespoke scissor crafts, and modern precision styling. Book your session in seconds.
+          <p className="text-xs sm:text-sm text-charcoal-400 dark:text-charcoal-400 mt-1.5 max-w-md mx-auto">
+            Select a service, pick your preferred time, and confirm in under a minute.
           </p>
         </section>
 
-        {/* 4-Step Progress Indicator */}
+        {/* Minimal Step Indicator */}
         <StepIndicator />
 
         {/* Dynamic Step View */}
-        <main className="max-w-4xl mx-auto px-4 mt-2">
+        <main className="max-w-3xl mx-auto px-4 mt-2">
           {step === 1 && <Step1Services />}
           {step === 2 && <Step2Barber />}
           {step === 3 && <Step3DateTime />}
@@ -61,22 +54,22 @@ const BookingFlowContainer: React.FC<{
         />
       )}
 
-      {/* Modern Minimal Footer */}
-      <footer className="border-t border-charcoal-200 dark:border-charcoal-800 bg-white/50 dark:bg-charcoal-900/40 backdrop-blur-sm mt-12 py-8 px-4 text-xs text-charcoal-500 dark:text-charcoal-400">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* Minimalist Line Footer */}
+      <footer className="border-t border-charcoal-100 dark:border-charcoal-850 py-6 px-4 text-xs text-charcoal-400 dark:text-charcoal-500">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <MapPin className="w-3.5 h-3.5 text-copper-500" />
+            <span className="flex items-center space-x-1">
+              <MapPin className="w-3.5 h-3.5 stroke-[1.5]" />
               <span>142 Mercer St, Soho, NY</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Phone className="w-3.5 h-3.5 text-copper-500" />
+            </span>
+            <span className="flex items-center space-x-1">
+              <Phone className="w-3.5 h-3.5 stroke-[1.5]" />
               <span>+1 (555) 234-8921</span>
-            </div>
+            </span>
           </div>
 
-          <div className="flex items-center space-x-2 text-[11px]">
-            <span>Portfolio Project by 3rd Year Software Engineering Student</span>
+          <div>
+            <span>Crown &amp; Blade Co.</span>
           </div>
         </div>
       </footer>

@@ -157,3 +157,4 @@ git push -u origin main
 
 **Software Engineering Student Portfolio Project**  
 Crafted with attention to clean code principles, mobile responsiveness, and realistic business domain logic.
+

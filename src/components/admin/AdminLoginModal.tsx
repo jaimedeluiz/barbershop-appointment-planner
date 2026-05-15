@@ -40,7 +40,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
           <Lock className="w-6 h-6" />
         </div>
 
-        <h3 className="font-serif text-lg font-bold text-charcoal-900 dark:text-white">
+        <h3 className="font-semibold text-base text-charcoal-900 dark:text-white">
           Staff Portal Access
         </h3>
         <p className="text-xs text-charcoal-500 dark:text-charcoal-400 mt-1">
@@ -84,3 +84,4 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClos
     </div>
   );
 };
+

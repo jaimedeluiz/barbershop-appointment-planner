@@ -139,7 +139,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
               <Scissors className="w-5 h-5 -rotate-45" />
             </div>
             <div>
-              <h2 className="font-serif text-lg sm:text-xl font-bold text-charcoal-900 dark:text-white">
+              <h2 className="font-semibold text-base sm:text-lg text-charcoal-900 dark:text-white">
                 Staff Operations Hub
               </h2>
               <p className="text-xs text-charcoal-500 dark:text-charcoal-400">
@@ -392,7 +392,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+                  <h3 className="font-semibold text-base text-charcoal-900 dark:text-white">
                     Service Catalog ({services.length})
                   </h3>
                   <p className="text-xs text-charcoal-500">
@@ -471,7 +471,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+                  <h3 className="font-semibold text-base text-charcoal-900 dark:text-white">
                     Master Barbers & Working Shifts
                   </h3>
                   <p className="text-xs text-charcoal-500">
@@ -487,11 +487,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     className="p-4 rounded-2xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800 shadow-sm space-y-3"
                   >
                     <div className="flex items-center space-x-3">
-                      <img
-                        src={barber.avatar}
-                        alt={barber.name}
-                        className="w-12 h-12 rounded-xl object-cover"
-                      />
+                      <div className="w-10 h-10 rounded-lg border border-charcoal-200 dark:border-charcoal-700 flex items-center justify-center text-xs font-semibold text-charcoal-800 dark:text-charcoal-200">
+                        {barber.initials || barber.name.split(' ').map((n) => n[0]).join('')}
+                      </div>
                       <div>
                         <h4 className="font-semibold text-sm text-charcoal-900 dark:text-white">
                           {barber.name}
@@ -574,7 +572,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
               {/* Popular Services Breakdown */}
               <div className="p-5 rounded-2xl bg-white dark:bg-charcoal-900 border border-charcoal-200 dark:border-charcoal-800">
-                <h4 className="font-serif font-bold text-sm text-charcoal-900 dark:text-white mb-3">
+                <h4 className="font-semibold text-sm text-charcoal-900 dark:text-white mb-3">
                   Most Requested Services
                 </h4>
                 <div className="space-y-3">
@@ -610,7 +608,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
           {/* TAB 5: SHOP SCHEDULE & GENERAL SETTINGS */}
           {activeTab === 'settings' && (
             <div className="space-y-4">
-              <h3 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+              <h3 className="font-semibold text-base text-charcoal-900 dark:text-white">
                 Shop Operating Schedule & Buffer Times
               </h3>
 
@@ -680,7 +678,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       {showBlockModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal-950/80 backdrop-blur-sm">
           <div className="bg-white dark:bg-charcoal-900 p-6 rounded-2xl max-w-sm w-full space-y-3 border border-charcoal-200 dark:border-charcoal-800">
-            <h4 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+            <h4 className="font-semibold text-base text-charcoal-900 dark:text-white">
               Block Out Shop / Barber Time
             </h4>
             <div className="space-y-2 text-xs">
@@ -820,7 +818,7 @@ const ServiceFormModal: React.FC<{
         onSubmit={handleSubmit}
         className="bg-white dark:bg-charcoal-900 p-6 rounded-2xl max-w-sm w-full space-y-3 border border-charcoal-200 dark:border-charcoal-800"
       >
-        <h4 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+        <h4 className="font-semibold text-base text-charcoal-900 dark:text-white">
           {service ? 'Edit Service' : 'Add New Service'}
         </h4>
 
@@ -970,7 +968,7 @@ const ManualWalkInModal: React.FC<{
         onSubmit={handleSave}
         className="bg-white dark:bg-charcoal-900 p-6 rounded-2xl max-w-sm w-full space-y-3 border border-charcoal-200 dark:border-charcoal-800"
       >
-        <h4 className="font-serif font-bold text-base text-charcoal-900 dark:text-white">
+        <h4 className="font-semibold text-base text-charcoal-900 dark:text-white">
           Manual / Walk-In Booking
         </h4>
 
