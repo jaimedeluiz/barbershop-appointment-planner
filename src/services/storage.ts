@@ -1,4 +1,4 @@
-import { Service, Barber, Booking, ShopSettings } from '../types';
+import { Service, Barber, Booking, ShopSettings, SentEmailLog } from '../types';
 import {
   INITIAL_SERVICES,
   INITIAL_BARBERS,
@@ -11,6 +11,7 @@ const KEYS = {
   BARBERS: 'cb_barbers_v1',
   BOOKINGS: 'cb_bookings_v1',
   SETTINGS: 'cb_settings_v1',
+  EMAILS: 'cb_sent_emails_v1',
 };
 
 // Dispatch event on modification to sync reactive components
@@ -162,6 +163,28 @@ export const storage = {
   saveSettings(settings: ShopSettings): void {
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
     notifyStorageChange('settings');
+  },
+
+  // SENT EMAILS / OUTBOX
+  getSentEmailLogs(): SentEmailLog[] {
+    try {
+      const data = localStorage.getItem(KEYS.EMAILS);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  addSentEmailLog(log: SentEmailLog): void {
+    const logs = this.getSentEmailLogs();
+    logs.unshift(log);
+    localStorage.setItem(KEYS.EMAILS, JSON.stringify(logs.slice(0, 50)));
+    notifyStorageChange('emails');
+  },
+
+  clearSentEmailLogs(): void {
+    localStorage.removeItem(KEYS.EMAILS);
+    notifyStorageChange('emails');
   },
 
   // RESET

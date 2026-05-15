@@ -15,7 +15,7 @@ import {
   Mail,
   Bell,
 } from 'lucide-react';
-import { Service, Barber, Booking, ShopSettings, ServiceCategory } from '../../types';
+import { Service, Barber, Booking, ShopSettings, ServiceCategory, SentEmailLog } from '../../types';
 import { storage } from '../../services/storage';
 import { formatDateDisplay } from '../../utils/timeSlots';
 import { isWithin24Hours } from '../../utils/reminders';
@@ -26,7 +26,7 @@ interface AdminDashboardProps {
   onClose: () => void;
 }
 
-type TabType = 'calendar' | 'services' | 'barbers' | 'analytics' | 'settings';
+type TabType = 'calendar' | 'services' | 'barbers' | 'analytics' | 'emails' | 'settings';
 type ViewMode = 'all' | 'today' | 'weekly' | 'date';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
@@ -34,6 +34,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const [services, setServices] = useState<Service[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [sentEmails, setSentEmails] = useState<SentEmailLog[]>([]);
   const [settings, setSettings] = useState<ShopSettings>(storage.getSettings());
 
   // Calendar View filters
@@ -70,6 +71,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     setServices(storage.getServices());
     setBarbers(storage.getBarbers());
     setBookings(storage.getBookings());
+    setSentEmails(storage.getSentEmailLogs());
     setSettings(storage.getSettings());
   };
 
@@ -226,6 +228,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
             { id: 'services', label: 'Services & Bundles', icon: Scissors },
             { id: 'barbers', label: 'Artisans & Shifts', icon: Users },
             { id: 'analytics', label: 'Statistics & Revenue', icon: BarChart3 },
+            { id: 'emails', label: `Outbox (${sentEmails.length})`, icon: Mail },
             { id: 'settings', label: 'Shop Schedule', icon: Settings },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -770,6 +773,80 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                   })}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: OUTBOX / SENT EMAILS */}
+          {activeTab === 'emails' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-base text-charcoal-900 dark:text-white">
+                    Automated Email Outbox ({sentEmails.length})
+                  </h3>
+                  <p className="text-xs text-charcoal-400 mt-0.5">
+                    Live log of all automated 24h reminder &amp; confirmation emails.
+                  </p>
+                </div>
+                {sentEmails.length > 0 && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Clear all sent email logs?')) {
+                        storage.clearSentEmailLogs();
+                        refreshAll();
+                      }
+                    }}
+                    className="px-2.5 py-1 text-xs text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    Clear Outbox
+                  </button>
+                )}
+              </div>
+
+              {sentEmails.length === 0 ? (
+                <div className="text-center py-12 rounded-xl bg-charcoal-50 dark:bg-charcoal-950 border border-charcoal-200 dark:border-charcoal-800 text-xs text-charcoal-400">
+                  <Mail className="w-6 h-6 mx-auto mb-2 opacity-50 stroke-[1.5]" />
+                  <p className="font-medium text-charcoal-700 dark:text-charcoal-300">
+                    Outbox is Empty
+                  </p>
+                  <p className="mt-1">
+                    Automated emails will appear here when an appointment enters its 24-hour window or when a customer books.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {sentEmails.map((email) => (
+                    <div
+                      key={email.id}
+                      className="p-3.5 rounded-xl border border-charcoal-200 dark:border-charcoal-800 bg-white dark:bg-charcoal-950 text-xs space-y-2 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between flex-wrap gap-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-charcoal-900 dark:text-white">
+                            To: {email.toName}
+                          </span>
+                          <span className="text-charcoal-400">&lt;{email.toEmail}&gt;</span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-[10px]">
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-medium">
+                            {email.type === '24h_reminder' ? '24h Auto Reminder' : 'Confirmation'}
+                          </span>
+                          <span className="text-charcoal-400">
+                            {new Date(email.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-2.5 rounded-lg bg-charcoal-50 dark:bg-charcoal-900 border border-charcoal-100 dark:border-charcoal-800 font-mono text-[11px] whitespace-pre-line text-charcoal-700 dark:text-charcoal-300">
+                        <div className="font-bold mb-1 border-b border-charcoal-200 dark:border-charcoal-800 pb-1">
+                          Subject: {email.subject}
+                        </div>
+                        {email.body}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

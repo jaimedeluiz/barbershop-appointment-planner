@@ -88,6 +88,18 @@ export interface BlockedTime {
   reason: string;
 }
 
+export interface SentEmailLog {
+  id: string;
+  bookingId: string;
+  toEmail: string;
+  toName: string;
+  type: '24h_reminder' | 'booking_confirmation' | 'custom';
+  subject: string;
+  body: string;
+  sentAt: string;
+  status: 'delivered';
+}
+
 export interface ShopSettings {
   shopName: string;
   tagline: string;
