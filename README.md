@@ -38,6 +38,21 @@
 
 ---
 
+## 🧠 Software Engineering Highlights & Architecture
+
+This application was engineered following real-world software engineering practices and architectural patterns:
+
+| Engineering Concept | Implementation in this Project |
+| :--- | :--- |
+| **Interval Scheduling Algorithm** | Computes slot availability dynamically based on aggregated multi-service durations $\sum(\text{duration}_i) + \text{sanitation\_buffer}$. Employs interval overlap detection $O(N)$ to guarantee mathematical zero double-booking across concurrent barber chairs. |
+| **Event-Driven Reactive State** | Uses a reactive event bus architecture with `CustomEvent` dispatchers (`cb_storage_update`, `cb_auto_reminder_fired`) to synchronize state instantly between the customer booking flow, staff admin dashboard, and background workers without polling. |
+| **Outbox Pattern & Background Workers** | Implements an asynchronous 24-hour lead-time scheduler with an in-app **Transactional Outbox Logger**, decoupling email/SMS delivery dispatch from user interactions for maximum fault tolerance. |
+| **Domain-Driven Design (DDD)** | Strongly typed domain entities (`Appointment`, `ServiceBundle`, `BarberChair`, `TimeSlot`, `OutboxMessage`) with strict TypeScript compiler flags (`noImplicitAny`, `strictNullChecks`). |
+| **RFC-5545 iCalendar Standards** | Generates compliant `.ics` calendar files with embedded `VALARM` triggers (RFC-5545 24h lead reminder) compatible with Apple Calendar, Google Calendar, and Outlook. |
+| **Mobile-First UX & Accessibility** | Responsive layout built with Tailwind CSS, strictly meeting WCAG AA accessibility standards including 44px minimum interactive touch targets (`min-h-touch`), semantic HTML5, and persistent dark/light theme switching. |
+
+---
+
 ## 🏗️ Architecture & Data Flow
 
 ```mermaid
