@@ -27,14 +27,14 @@ const BookingFlowContainer: React.FC<{
 
         {/* Minimal Understated Hero Section */}
         <section className="text-center pt-8 pb-3 px-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 mb-3.5 rounded-full border border-charcoal-200 dark:border-charcoal-800 bg-charcoal-100/70 dark:bg-charcoal-900/70 text-[10px] tracking-[0.2em] uppercase font-semibold text-charcoal-500 dark:text-charcoal-400">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 mb-3 rounded-full border border-charcoal-200 dark:border-charcoal-800 bg-charcoal-100/70 dark:bg-charcoal-900/70 text-[11px] tracking-wider uppercase font-semibold text-charcoal-500 dark:text-charcoal-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
             <span>Walk-ins &amp; Appointments</span>
           </div>
-          <h2 className="font-display text-4xl sm:text-6xl font-black uppercase tracking-[0.14em] sm:tracking-[0.2em] text-charcoal-950 dark:text-white">
+          <h2 className="font-display text-4xl sm:text-6xl font-extrabold uppercase tracking-tight text-charcoal-950 dark:text-white">
             FRESH <span className="text-copper-600 dark:text-copper-400">BARBER</span>
           </h2>
-          <p className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-charcoal-400 dark:text-charcoal-500 mt-2.5 font-medium">
+          <p className="text-xs sm:text-sm text-charcoal-500 dark:text-charcoal-400 mt-2 font-medium tracking-normal">
             Modern Grooming Studio • Precision Cuts &amp; Shaves
           </p>
         </section>
