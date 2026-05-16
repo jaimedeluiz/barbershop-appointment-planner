@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenLookup, onOpenAdmin }) => 
             </svg>
           </div>
 
-          <span className="font-display text-xl sm:text-2xl tracking-normal text-charcoal-950 dark:text-white leading-none">
+          <span className="font-display font-black text-xl sm:text-2xl tracking-tight uppercase text-charcoal-950 dark:text-white leading-none">
             FRESH <span className="text-copper-600 dark:text-copper-400">BARBER</span>
           </span>
         </div>

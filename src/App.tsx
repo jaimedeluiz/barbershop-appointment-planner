@@ -31,7 +31,7 @@ const BookingFlowContainer: React.FC<{
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
             <span>Walk-ins &amp; Appointments</span>
           </div>
-          <h2 className="font-display text-5xl sm:text-7xl font-normal tracking-wide text-charcoal-950 dark:text-white">
+          <h2 className="font-display text-5xl sm:text-7xl font-black uppercase tracking-tight text-charcoal-950 dark:text-white">
             FRESH <span className="text-copper-600 dark:text-copper-400">BARBER</span>
           </h2>
           <p className="text-xs sm:text-sm text-charcoal-500 dark:text-charcoal-400 mt-1 font-medium">
