@@ -1,8 +1,8 @@
 {
-  "name": "barbershop-booking-slots",
+  "name": "barbershop-appointment-planner",
   "version": "1.0.0",
   "type": "module",
-  "description": "Mobile-first barbershop appointment and time slot booking application with schedule conflict prevention and staff admin dashboard",
+  "description": "Mobile-first barbershop appointment planner and schedule manager with real-time conflict prevention, 24h automated reminders, and staff dashboard",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
