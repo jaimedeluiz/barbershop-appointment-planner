@@ -1,8 +1,8 @@
 {
-  "name": "fresh-barber",
+  "name": "barbershop-booking-slots",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "description": "Mobile-first barbershop appointment and time slot booking application with schedule conflict prevention and staff admin dashboard",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

@@ -1,6 +1,6 @@
-# ✂️ Fresh Barber | Modern Barbershop Web Application
+# ✂️ Barbershop Slot Booking Platform
 
-> A modern, mobile-first appointment booking platform built with **React 18**, **TypeScript**, and **Tailwind CSS**. Designed with an artisanal luxury aesthetic (deep charcoal & warm copper), real-time schedule conflict prevention, and a full password-protected administrative suite.
+> A modern, mobile-first appointment and time slot booking web application for barbershops built with **React 18**, **TypeScript**, and **Tailwind CSS**. Features real-time slot conflict prevention, dynamic service duration calculation, automated 24h background appointment reminders, customer self-service portal, and password-protected staff administration.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React_18-20232A?style=flat-square&logo=react&logoColor=61DAFB)
