@@ -27,14 +27,14 @@ const BookingFlowContainer: React.FC<{
 
         {/* Minimal Understated Hero Section */}
         <section className="text-center pt-8 pb-3 px-4 max-w-2xl mx-auto">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 mb-3 rounded-full border border-charcoal-200 dark:border-charcoal-800 bg-charcoal-100/70 dark:bg-charcoal-900/70 text-[11px] tracking-wider uppercase font-semibold text-charcoal-500 dark:text-charcoal-400">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 mb-3 rounded-full border border-charcoal-200 dark:border-charcoal-800 bg-charcoal-100/70 dark:bg-charcoal-900/70 text-[11px] tracking-wide uppercase font-semibold text-charcoal-500 dark:text-charcoal-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
             <span>Walk-ins &amp; Appointments</span>
           </div>
-          <h2 className="font-display text-4xl sm:text-6xl font-extrabold uppercase tracking-tight text-charcoal-950 dark:text-white">
+          <h2 className="font-display text-5xl sm:text-7xl font-normal tracking-wide text-charcoal-950 dark:text-white">
             FRESH <span className="text-copper-600 dark:text-copper-400">BARBER</span>
           </h2>
-          <p className="text-xs sm:text-sm text-charcoal-500 dark:text-charcoal-400 mt-2 font-medium tracking-normal">
+          <p className="text-xs sm:text-sm text-charcoal-500 dark:text-charcoal-400 mt-1 font-medium">
             Modern Grooming Studio • Precision Cuts &amp; Shaves
           </p>
         </section>
